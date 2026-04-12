@@ -6,7 +6,7 @@ import MainTabs from "./tabs/MainTabs";
 const Stack = createStackNavigator();
 
 export default function AppNavigator() {
-  const isLoggedIn = true; // 👈 change to true to test MainTabs
+  const isLoggedIn = true; //  change to true to test MainTabs
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
