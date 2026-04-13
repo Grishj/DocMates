@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from "../../../theme";
 import { AppText, Card, Row, Column, Box, Spacer, Avatar } from "@components/index";
+import { useMode } from "../../../store/ModeContext";
 
 export default function ProfileScreen() {
-  const [activeTab, setActiveTab] = useState<"Student" | "DartaSathi">("Student");
-  const [isOnline, setIsOnline] = useState(true);
+  const { appMode: activeTab, setAppMode: setActiveTab, isOnline, setIsOnline } = useMode();
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -144,57 +144,7 @@ export default function ProfileScreen() {
 
         <Spacer size="md" />
 
-        {/* ─── Estimated Earnings (DartaSathi Mode Only) ─────────────── */}
-        {activeTab === "DartaSathi" && (
-          <View style={styles.earningsCard}>
-            <Row justify="space-between" align="center">
-              <Column>
-                <AppText variant="micro" weight="bold" color="#7986CB" style={{ letterSpacing: 0.5 }}>
-                  ESTIMATED EARNINGS
-                </AppText>
-                <AppText variant="h2" weight="bold" color="#283593">
-                  NPR 4,250
-                </AppText>
-              </Column>
-              <Column align="flex-end" gap={4}>
-                <AppText variant="micro" weight="bold" color="#7986CB" style={{ fontSize: 9 }}>
-                  AVAILABILITY
-                </AppText>
-                <TouchableOpacity
-                  style={[styles.onlineBadge, !isOnline && { borderColor: '#FFEBEE' }]}
-                  onPress={() => setIsOnline(!isOnline)}
-                  activeOpacity={0.7}
-                >
-                  <View style={[styles.onlineDot, !isOnline && { backgroundColor: '#D32F2F' }]} />
-                  <AppText
-                    variant="micro"
-                    weight="bold"
-                    color={isOnline ? "#388E3C" : "#D32F2F"}
-                    style={{ fontSize: 10 }}
-                  >
-                    {isOnline ? "ONLINE" : "OFFLINE"}
-                  </AppText>
-                </TouchableOpacity>
-              </Column>
-            </Row>
 
-            <Spacer size="lg" />
-
-            {/* Progress Bar Area */}
-            <View style={styles.progressTrack}>
-              <View style={[styles.progressFill, { width: '75%' }]} />
-            </View>
-            <Spacer size="xs" />
-            <Row justify="space-between">
-              <AppText variant="micro" weight="semibold" color="#3949AB">
-                Weekly Target
-              </AppText>
-              <AppText variant="micro" weight="semibold" color="#3949AB">
-                75% Complete
-              </AppText>
-            </Row>
-          </View>
-        )}
 
         <Spacer size="xl" />
 

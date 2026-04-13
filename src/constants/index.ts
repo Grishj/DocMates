@@ -7,6 +7,11 @@ export const ROUTES = {
   INBOX: "Inbox",
   PROFILE: "Profile",
 
+  // darta-sathi mode tabs
+  DS_DASHBOARD: "DSDashboard",
+  DS_TASKS: "DSTasks",
+  DS_EARNINGS: "DSEarnings",
+
   // ──────────────────
   // auth
   // ──────────────────
@@ -53,4 +58,9 @@ export const ROUTES = {
   EDIT_PROFILE: "EditProfile",
   SETTINGS: "Settings",
   CHANGE_PASSWORD: "ChangePassword",
+
+  // ──────────────────
+  // notifications
+  // ──────────────────
+  NOTIFICATIONS: "Notifications",
 } as const;

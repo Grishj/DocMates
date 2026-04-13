@@ -6,6 +6,8 @@ import {
   FlatList,
   Alert,
   Linking,
+  TextInput,
+  TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, SPACING, RADIUS } from "../../../theme";
@@ -21,7 +23,7 @@ import {
   Button,
 } from "@components/index";
 
-type RequestStatus = "Pending" | "Accepted" | "Completed" | "Cancelled";
+type RequestStatus = "Pending" | "Accepted" | "Completed" | "Verified" | "Cancelled";
 
 interface RequestItem {
   id: string;
@@ -33,6 +35,7 @@ interface RequestItem {
   priceRange: string;
   phone?: string;
   email?: string;
+  hasReviewed?: boolean;
 }
 
 // ─── Dummy Data ────────────────────────────────────────────────
@@ -84,6 +87,9 @@ const INITIAL_REQUESTS: RequestItem[] = [
 
 export default function OrderScreen({ navigation, route }: { navigation: any; route: any }) {
   const [requests, setRequests] = useState<RequestItem[]>(INITIAL_REQUESTS);
+  const [activeReviewId, setActiveReviewId] = useState<string | null>(null);
+  const [reviewRating, setReviewRating] = useState<number>(5);
+  const [reviewComment, setReviewComment] = useState<string>("");
 
   useEffect(() => {
     if (route?.params?.newRequest) {
@@ -97,6 +103,26 @@ export default function OrderScreen({ navigation, route }: { navigation: any; ro
       navigation.setParams({ newRequest: undefined });
     }
   }, [route?.params?.newRequest]);
+
+  const handleVerifyRequest = (id: string) => {
+    Alert.alert(
+      "Confirm Action",
+      "Are you sure you have received your documents and want to mark this request as complete?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Confirm",
+          onPress: () => {
+            setRequests((prev) =>
+              prev.map((req) =>
+                req.id === id ? { ...req, status: "Verified" } : req
+              )
+            );
+          },
+        },
+      ]
+    );
+  };
 
   const handleCancelRequest = (id: string) => {
     Alert.alert(
@@ -117,6 +143,14 @@ export default function OrderScreen({ navigation, route }: { navigation: any; ro
         },
       ]
     );
+  };
+
+  const handleSubmitReview = (id: string) => {
+    setActiveReviewId(null);
+    setRequests((prev) =>
+      prev.map((req) => (req.id === id ? { ...req, hasReviewed: true } : req))
+    );
+    Alert.alert("Thank you!", "Your review has been successfully submitted.");
   };
 
   const handleWhatsApp = async (phone?: string) => {
@@ -157,6 +191,8 @@ export default function OrderScreen({ navigation, route }: { navigation: any; ro
       case "Accepted":
         return COLORS.primary; // Brand Blue/Primary
       case "Completed":
+        return "#1565C0"; // Blue
+      case "Verified":
         return COLORS.success; // Green
       case "Cancelled":
         return COLORS.error; // Red
@@ -363,6 +399,95 @@ export default function OrderScreen({ navigation, route }: { navigation: any; ro
                     Send your documents securely to the provider
                   </AppText>
                 </>
+              )}
+
+              {/* Action Buttons for Completed */}
+              {item.status === "Completed" && (
+                <>
+                  <Spacer size="lg" />
+                  <Row gap={SPACING.md}>
+                    <View style={{ flex: 1 }}>
+                      <Button
+                        title="Review & Verify"
+                        variant="primary"
+                        size="sm"
+                        onPress={() => handleVerifyRequest(item.id)}
+                        fullWidth
+                        style={{ backgroundColor: COLORS.success, borderColor: COLORS.success }}
+                      />
+                    </View>
+                  </Row>
+                </>
+              )}
+
+              {/* Action Buttons for Verified (Review System) */}
+              {item.status === "Verified" && !item.hasReviewed && activeReviewId !== item.id && (
+                <>
+                  <Spacer size="lg" />
+                  <Button
+                    title="Leave a Review"
+                    variant="outline"
+                    size="sm"
+                    onPress={() => {
+                       setActiveReviewId(item.id);
+                       setReviewRating(5);
+                       setReviewComment("");
+                    }}
+                    fullWidth
+                    style={{ borderColor: "#F59E0B" }}
+                    textStyle={{ color: "#F59E0B" }}
+                  />
+                </>
+              )}
+
+              {item.status === "Verified" && activeReviewId === item.id && (
+                 <View style={{ marginTop: SPACING.lg, padding: SPACING.md, backgroundColor: "#FFFBEB", borderRadius: RADIUS.md }}>
+                    <AppText variant="caption" weight="bold" color="#D97706" style={{ marginBottom: 4 }}>How was the service?</AppText>
+                    <Row gap={4} style={{ marginBottom: 12 }}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <TouchableOpacity key={star} onPress={() => setReviewRating(star)}>
+                          <Ionicons name={star <= reviewRating ? "star" : "star-outline"} size={24} color="#F59E0B" />
+                        </TouchableOpacity>
+                      ))}
+                    </Row>
+                    <TextInput 
+                      style={{ backgroundColor: COLORS.white, borderWidth: 1, borderColor: "#FDE68A", padding: 12, borderRadius: RADIUS.sm, height: 80, textAlignVertical: "top" }} 
+                      placeholder="Leave a comment (optional)..."
+                      multiline
+                      value={reviewComment}
+                      onChangeText={setReviewComment}
+                    />
+                    <Spacer size="md" />
+                    <Row gap={SPACING.sm}>
+                      <View style={{ flex: 1 }}>
+                        <Button
+                          title="Cancel"
+                          variant="outline"
+                          size="sm"
+                          onPress={() => setActiveReviewId(null)}
+                          fullWidth
+                          style={{ borderColor: COLORS.textMuted }}
+                          textStyle={{ color: COLORS.textMuted }}
+                        />
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Button
+                          title="Submit"
+                          variant="primary"
+                          size="sm"
+                          onPress={() => handleSubmitReview(item.id)}
+                          fullWidth
+                          style={{ backgroundColor: "#D97706", borderColor: "#D97706" }}
+                        />
+                      </View>
+                    </Row>
+                 </View>
+              )}
+
+              {item.status === "Verified" && item.hasReviewed && (
+                 <View style={{ marginTop: SPACING.lg, alignItems: "center" }}>
+                   <AppText variant="micro" color={COLORS.success} weight="bold">✓ Review Submitted</AppText>
+                 </View>
               )}
             </View>
           </Card>
