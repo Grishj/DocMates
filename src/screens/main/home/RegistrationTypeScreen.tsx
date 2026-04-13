@@ -9,6 +9,7 @@ import { Header, WrapperContainer, AppText, Card, Row, Column } from "@component
 export default function RegistrationTypeScreen({ navigation, route }: { navigation: any, route: any }) {
   const university = route?.params?.university;
   const category = route?.params?.category;
+  const service = route?.params?.service ?? "";
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.surface }}>
@@ -31,7 +32,7 @@ export default function RegistrationTypeScreen({ navigation, route }: { navigati
           <Card
             variant="flat"
             style={[styles.card, { borderLeftColor: "#B84318" }]}
-            onPress={() => navigation.navigate(ROUTES.SELECT_COLLEGE, { university, category, registrationType: "government" })}
+            onPress={() => navigation.navigate(ROUTES.SELECT_COLLEGE, { university, category, registrationType: "government", service })}
             padding={SPACING.lg}
           >
             <View style={styles.watermarkContainer}>
@@ -60,7 +61,7 @@ export default function RegistrationTypeScreen({ navigation, route }: { navigati
           <Card
             variant="flat"
             style={[styles.card, { borderLeftColor: COLORS.navy }]}
-            onPress={() => navigation.navigate(ROUTES.SELECT_COLLEGE, { university, category, registrationType: "affiliated" })}
+            onPress={() => navigation.navigate(ROUTES.SELECT_COLLEGE, { university, category, registrationType: "affiliated", service })}
             padding={SPACING.lg}
           >
              <View style={styles.watermarkContainer}>

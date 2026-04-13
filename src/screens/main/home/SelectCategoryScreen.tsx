@@ -53,6 +53,7 @@ const CATEGORIES = [
 
 export default function SelectCategoryScreen({ navigation, route }: { navigation: any, route: any }) {
   const university = route?.params?.university;
+  const service = route?.params?.service ?? "";
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.surface }}>
@@ -84,7 +85,7 @@ export default function SelectCategoryScreen({ navigation, route }: { navigation
                 title={item.name}
                 variant="elevated"
                 style={styles.categoryCard}
-                onPress={() => navigation.navigate(ROUTES.REGISTRATION_TYPE, { university, category: item.name })}
+                onPress={() => navigation.navigate(ROUTES.REGISTRATION_TYPE, { university, category: item.name, service })}
                 leftContent={
                   <Box
                     width={48}

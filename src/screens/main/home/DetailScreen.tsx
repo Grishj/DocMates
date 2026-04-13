@@ -6,7 +6,8 @@ import { ROUTES } from "@constants/index";
 import { COLORS, SPACING, RADIUS } from "../../../theme";
 import { Header, WrapperContainer, AppText, Card, Row, Column } from "@components/index";
 
-export default function DetailScreen({ navigation }: { navigation: any }) {
+export default function DetailScreen({ navigation, route }: { navigation: any; route: any }) {
+  const service = route?.params?.service ?? "";
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.surface }}>
       <Header
@@ -29,7 +30,7 @@ export default function DetailScreen({ navigation }: { navigation: any }) {
           <Card
             variant="flat"
             style={[styles.card, { borderLeftColor: "#B84318" }]}
-            onPress={() => navigation.navigate(ROUTES.SELECT_UNIVERSITY)}
+            onPress={() => navigation.navigate(ROUTES.SELECT_UNIVERSITY, { service })}
             padding={SPACING.lg}
           >
             <Column gap={SPACING.md}>
@@ -53,7 +54,7 @@ export default function DetailScreen({ navigation }: { navigation: any }) {
           <Card
             variant="flat"
             style={[styles.card, { borderLeftColor: COLORS.navy }]}
-            onPress={() => navigation.navigate(ROUTES.CHECKOUT, { institutionType: "neb" })}
+            onPress={() => navigation.navigate(ROUTES.CHECKOUT, { institutionType: "neb", service })}
             padding={SPACING.lg}
           >
             <Column gap={SPACING.md}>

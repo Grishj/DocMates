@@ -18,7 +18,7 @@ const TAB_ICONS: Record<string, { active: string; inactive: string }> = {
     active: "home",
     inactive: "home-outline",
   },
-  [ROUTES.ORDER]: {
+  [ROUTES.REQUEST]: {
     active: "receipt",
     inactive: "receipt-outline",
   },
@@ -59,7 +59,7 @@ export default function MainTabs() {
       })}
     >
       <Tab.Screen name={ROUTES.HOME} component={HomeStack} />
-      <Tab.Screen name={ROUTES.ORDER} component={OrderScreen} options={{ title: "Orders" }} />
+      <Tab.Screen name={ROUTES.REQUEST} component={OrderScreen} options={{ title: "Requests" }} />
       <Tab.Screen name={ROUTES.INBOX} component={InboxScreen} options={{ title: "Marketplace" }} />
       <Tab.Screen name={ROUTES.PROFILE} component={ProfileScreen} />
     </Tab.Navigator>

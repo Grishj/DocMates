@@ -11,6 +11,9 @@ import SelectCollegeScreen from "@screens/main/home/SelectCollegeScreen";
 import SelectUniversityScreen from "@screens/main/home/SelectUniversityScreen";
 import SelectCategoryScreen from "@screens/main/home/SelectCategoryScreen";
 import CheckoutScreen from "@screens/main/home/CheckoutScreen";
+import CollegeServiceProvidersScreen from "@screens/main/home/CollegeServiceProvidersScreen";
+import ConfirmRequestScreen from "@screens/main/home/ConfirmRequestScreen";
+import RequestSuccessScreen from "@screens/main/home/RequestSuccessScreen";
 import PaymentScreen from "@screens/main/home/PaymentScreen";
 import OrderSuccessScreen from "@screens/main/home/OrderSuccessScreen";
 
@@ -31,6 +34,9 @@ export default function HomeStack() {
       <Stack.Screen name={ROUTES.SELECT_CATEGORY} component={SelectCategoryScreen} />
       <Stack.Screen name={ROUTES.REGISTRATION_TYPE} component={RegistrationTypeScreen} />
       <Stack.Screen name={ROUTES.SELECT_COLLEGE} component={SelectCollegeScreen} />
+      <Stack.Screen name={ROUTES.COLLEGE_SERVICE_PROVIDERS} component={CollegeServiceProvidersScreen} />
+      <Stack.Screen name={ROUTES.CONFIRM_REQUEST} component={ConfirmRequestScreen} />
+      <Stack.Screen name={ROUTES.REQUEST_SUCCESS} component={RequestSuccessScreen} options={{ headerShown: false, gestureEnabled: false }} />
       <Stack.Screen name={ROUTES.PAYMENT} component={PaymentScreen} />
       <Stack.Screen
         name={ROUTES.ORDER_SUCCESS}

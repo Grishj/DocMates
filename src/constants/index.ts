@@ -3,7 +3,7 @@
 export const ROUTES = {
   // main tabs
   HOME: "Home",
-  ORDER: "Order",
+  REQUEST: "Request",
   INBOX: "Inbox",
   PROFILE: "Profile",
 
@@ -25,6 +25,9 @@ export const ROUTES = {
   SELECT_CATEGORY: "SelectCategory",
   REGISTRATION_TYPE: "RegistrationType",
   SELECT_COLLEGE: "SelectCollege",
+  COLLEGE_SERVICE_PROVIDERS: "CollegeServiceProviders",
+  CONFIRM_REQUEST: "ConfirmRequest",
+  REQUEST_SUCCESS: "RequestSuccess",
   CHECKOUT: "Checkout",
   PAYMENT: "Payment",
   ORDER_SUCCESS: "OrderSuccess",

@@ -49,8 +49,9 @@ const INSTITUTIONS = [
   },
 ];
 
-export default function SelectUniversityScreen({ navigation }: { navigation: any }) {
+export default function SelectUniversityScreen({ navigation, route }: { navigation: any; route: any }) {
   const [searchText, setSearchText] = useState("");
+  const service = route?.params?.service ?? "";
 
   const filteredUniversities = INSTITUTIONS.filter((u) =>
     u.nameEn.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -101,7 +102,7 @@ export default function SelectUniversityScreen({ navigation }: { navigation: any
                   description={item.nameNp}
                   variant="elevated"
                   style={styles.collegeCard}
-                  onPress={() => navigation.navigate(ROUTES.SELECT_CATEGORY, { university: item.nameEn })}
+                  onPress={() => navigation.navigate(ROUTES.SELECT_CATEGORY, { university: item.nameEn, service })}
                   leftContent={
                     <Box
                       width={48}

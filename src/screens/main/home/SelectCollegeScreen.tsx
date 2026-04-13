@@ -51,6 +51,7 @@ export default function SelectCollegeScreen({ navigation, route }: { navigation:
   const registrationType = route?.params?.registrationType; // "government" or "affiliated"
   const university = route?.params?.university;
   const category = route?.params?.category;
+  const service = route?.params?.service ?? "";
 
   const filteredColleges = useMemo(() => {
     return COLLEGES_DB.filter((college) => {
@@ -126,10 +127,11 @@ export default function SelectCollegeScreen({ navigation, route }: { navigation:
                       description={item.location}
                       variant="elevated"
                       style={styles.collegeCard}
-                      onPress={() => navigation.navigate(ROUTES.CHECKOUT, { 
+                      onPress={() => navigation.navigate(ROUTES.COLLEGE_SERVICE_PROVIDERS, { 
                         college: item.name,
                         university: item.university,
                         category: item.category,
+                        service,
                       })}
                       leftContent={
                         <Box
