@@ -21,6 +21,10 @@ export const ROUTES = {
   // home stack screens ← rename these to be distinct
   HOME_SCREEN: "HomeScreen", // ← was HOME: "Home"
   DETAIL: "DetailScreen",
+  SELECT_UNIVERSITY: "SelectUniversity",
+  SELECT_CATEGORY: "SelectCategory",
+  REGISTRATION_TYPE: "RegistrationType",
+  SELECT_COLLEGE: "SelectCollege",
   CHECKOUT: "Checkout",
   PAYMENT: "Payment",
   ORDER_SUCCESS: "OrderSuccess",
