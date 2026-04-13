@@ -9,8 +9,8 @@
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "resizeMode": "cover",
+      "backgroundColor": "red"
     },
     "ios": {
       "supportsTablet": true
@@ -25,6 +25,19 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Manrope-Bold.ttf",
+            "./assets/fonts/Inter-Bold.ttf",
+            "./assets/fonts/Roboto-Regular.ttf",
+            "./assets/fonts/NotoSansDevanagari-Regular.ttf"
+          ]
+        }
+      ]
+    ]
   }
 }
