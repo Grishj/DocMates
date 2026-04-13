@@ -7,11 +7,20 @@ import {
   ViewStyle,
   TextStyle,
   Animated,
+  FlatList,
 } from "react-native";
-import { COLORS, RADIUS, SPACING, TYPOGRAPHY } from "../theme";
+import { Ionicons } from "@expo/vector-icons";
+import { COLORS, RADIUS, SPACING, TYPOGRAPHY, SHADOWS } from "../theme";
 import { AppText } from "./index";
 
 type SearchBarVariant = "default" | "filled" | "outline";
+
+type Suggestion = {
+  id: string;
+  label: string;
+  subtitle?: string;
+  icon?: keyof typeof Ionicons.glyphMap;
+};
 
 type SearchBarProps = {
   value: string;
@@ -28,6 +37,11 @@ type SearchBarProps = {
   rightElement?: React.ReactNode;
   style?: ViewStyle;
   inputStyle?: TextStyle;
+  // ─── Filter / Suggestions ─────────────────────────────────
+  suggestions?: Suggestion[];
+  onSuggestionPress?: (item: Suggestion) => void;
+  maxSuggestions?: number;
+  showSuggestionsOnFocus?: boolean;
 };
 
 const SearchBar = ({
@@ -44,6 +58,10 @@ const SearchBar = ({
   rightElement,
   style,
   inputStyle,
+  suggestions = [],
+  onSuggestionPress,
+  maxSuggestions = 5,
+  showSuggestionsOnFocus = true,
 }: SearchBarProps) => {
   const [focused, setFocused] = useState(false);
   const inputRef = useRef<TextInput>(null);
@@ -60,7 +78,8 @@ const SearchBar = ({
   };
 
   const handleBlur = () => {
-    setFocused(false);
+    // Small delay so suggestion press registers before dropdown hides
+    setTimeout(() => setFocused(false), 150);
     onBlur?.();
     Animated.spring(scaleAnim, {
       toValue: 1,
@@ -75,61 +94,132 @@ const SearchBar = ({
     inputRef.current?.focus();
   };
 
+  const handleSuggestionPress = (item: Suggestion) => {
+    onSuggestionPress?.(item);
+    onChangeText(item.label);
+    inputRef.current?.blur();
+  };
+
+  // ─── Filter suggestions based on current value ────────────
+  const filteredSuggestions =
+    value.length > 0
+      ? suggestions
+          .filter((s) =>
+            s.label.toLowerCase().includes(value.toLowerCase())
+          )
+          .slice(0, maxSuggestions)
+      : showSuggestionsOnFocus && focused
+      ? suggestions.slice(0, maxSuggestions)
+      : [];
+
+  const showDropdown = focused && filteredSuggestions.length > 0;
+
   return (
-    <Animated.View
-      style={[
-        styles.container,
-        variantStyles[variant].container,
-        focused && variantStyles[variant].focused,
-        disabled && styles.disabled,
-        { transform: [{ scale: scaleAnim }] },
-        style,
-      ]}
-    >
-      {/* Search Icon */}
-      <View style={styles.searchIcon}>
-        <View style={styles.searchCircle} />
-        <View style={styles.searchHandle} />
-      </View>
-
-      {/* Input */}
-      <TextInput
-        ref={inputRef}
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-        placeholderTextColor={COLORS.textMuted}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        onSubmitEditing={onSubmit}
-        editable={!disabled}
-        autoFocus={autoFocus}
-        returnKeyType="search"
+    <View style={styles.root}>
+      <Animated.View
         style={[
-          styles.input,
-          variantStyles[variant].input,
-          disabled && styles.disabledText,
-          inputStyle,
+          styles.container,
+          variantStyles[variant].container,
+          focused && variantStyles[variant].focused,
+          disabled && styles.disabled,
+          { transform: [{ scale: scaleAnim }] },
+          style,
         ]}
-      />
+      >
+        {/* Search Icon */}
+        <Ionicons
+          name="search-outline"
+          size={18}
+          color={focused ? COLORS.primary : COLORS.textMuted}
+        />
 
-      {/* Right side */}
-      <View style={styles.rightSlot}>
-        {value.length > 0 && (
-          <TouchableOpacity
-            onPress={handleClear}
-            style={styles.clearButton}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <View style={styles.clearLine1} />
-            <View style={styles.clearLine2} />
-          </TouchableOpacity>
-        )}
-        {rightElement && (
-          <View style={styles.rightElement}>{rightElement}</View>
-        )}
-      </View>
-    </Animated.View>
+        {/* Input */}
+        <TextInput
+          ref={inputRef}
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          placeholderTextColor={COLORS.textMuted}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onSubmitEditing={onSubmit}
+          editable={!disabled}
+          autoFocus={autoFocus}
+          returnKeyType="search"
+          style={[
+            styles.input,
+            variantStyles[variant].input,
+            disabled && styles.disabledText,
+            inputStyle,
+          ]}
+        />
+
+        {/* Right side */}
+        <View style={styles.rightSlot}>
+          {value.length > 0 && (
+            <TouchableOpacity
+              onPress={handleClear}
+              style={styles.clearButton}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons name="close" size={14} color={COLORS.white} />
+            </TouchableOpacity>
+          )}
+          {rightElement && (
+            <View style={styles.rightElement}>{rightElement}</View>
+          )}
+        </View>
+      </Animated.View>
+
+      {/* ─── Suggestions Dropdown ────────────────────────────── */}
+      {showDropdown && (
+        <View style={styles.dropdown}>
+          {filteredSuggestions.map((item, index) => (
+            <TouchableOpacity
+              key={item.id}
+              style={[
+                styles.suggestionItem,
+                index < filteredSuggestions.length - 1 &&
+                  styles.suggestionBorder,
+              ]}
+              onPress={() => handleSuggestionPress(item)}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name={item.icon ?? "search-outline"}
+                size={18}
+                color={COLORS.textMuted}
+                style={styles.suggestionIcon}
+              />
+              <View style={styles.suggestionText}>
+                <AppText
+                  variant="caption"
+                  weight="medium"
+                  color={COLORS.textPrimary}
+                  numberOfLines={1}
+                >
+                  {item.label}
+                </AppText>
+                {item.subtitle && (
+                  <AppText
+                    variant="micro"
+                    color={COLORS.textMuted}
+                    numberOfLines={1}
+                  >
+                    {item.subtitle}
+                  </AppText>
+                )}
+              </View>
+              <Ionicons
+                name="arrow-forward-outline"
+                size={14}
+                color={COLORS.textMuted}
+              />
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+    </View>
   );
 };
 
@@ -187,40 +277,16 @@ const variantStyles: Record<
 };
 
 const styles = StyleSheet.create({
+  root: {
+    position: "relative",
+    zIndex: 100,
+  },
   container: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: SPACING.md,
     paddingVertical: SPACING.sm,
     gap: SPACING.sm,
-  },
-
-  // ─── Search Icon ───────────────────────────────────────────
-  searchIcon: {
-    width: 16,
-    height: 16,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  searchCircle: {
-    width: 10,
-    height: 10,
-    borderRadius: RADIUS.full,
-    borderWidth: 2,
-    borderColor: COLORS.textMuted,
-    position: "absolute",
-    top: 0,
-    left: 0,
-  },
-  searchHandle: {
-    width: 5,
-    height: 2,
-    backgroundColor: COLORS.textMuted,
-    borderRadius: RADIUS.full,
-    position: "absolute",
-    bottom: 1,
-    right: 0,
-    transform: [{ rotate: "45deg" }],
   },
 
   // ─── Input ─────────────────────────────────────────────────
@@ -244,28 +310,48 @@ const styles = StyleSheet.create({
 
   // ─── Clear Button ──────────────────────────────────────────
   clearButton: {
-    width: 18,
-    height: 18,
+    width: 20,
+    height: 20,
     borderRadius: RADIUS.full,
     backgroundColor: COLORS.textMuted,
     alignItems: "center",
     justifyContent: "center",
   },
-  clearLine1: {
+
+  // ─── Suggestions Dropdown ──────────────────────────────────
+  dropdown: {
     position: "absolute",
-    width: 9,
-    height: 1.5,
-    backgroundColor: COLORS.white,
-    borderRadius: RADIUS.full,
-    transform: [{ rotate: "45deg" }],
+    top: "100%",
+    left: 0,
+    right: 0,
+    backgroundColor: COLORS.surface,
+    borderRadius: RADIUS.md,
+    marginTop: SPACING.xs,
+    paddingVertical: SPACING.xs,
+    shadowColor: COLORS.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    zIndex: 999,
   },
-  clearLine2: {
-    position: "absolute",
-    width: 9,
-    height: 1.5,
-    backgroundColor: COLORS.white,
-    borderRadius: RADIUS.full,
-    transform: [{ rotate: "-45deg" }],
+  suggestionItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: SPACING.lg,
+    paddingVertical: SPACING.sm + 2,
+  },
+  suggestionBorder: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: COLORS.border,
+  },
+  suggestionIcon: {
+    marginRight: SPACING.sm,
+  },
+  suggestionText: {
+    flex: 1,
   },
 
   // ─── Disabled ──────────────────────────────────────────────

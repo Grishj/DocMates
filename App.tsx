@@ -8,8 +8,8 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <WelcomeScreen />
-        {/* <AppNavigator /> */}
+        {/* <WelcomeScreen /> */}
+        <AppNavigator />
       </NavigationContainer>
     </SafeAreaProvider>
   );

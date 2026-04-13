@@ -25,7 +25,7 @@ import SearchBar from "./SearchBar ";
 import FAB from "./FAB";
 import Chip from "./Chip";
 import ChipGroup from "./ChipGroup";
-
+import Header from "./ui/Header";
 export {
   Button,
   WrapperContainer,
@@ -54,4 +54,5 @@ export {
   FAB,
   Chip,
   ChipGroup,
+  Header,
 };

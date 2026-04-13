@@ -23,8 +23,8 @@ const TAB_ICONS: Record<string, { active: string; inactive: string }> = {
     inactive: "receipt-outline",
   },
   [ROUTES.INBOX]: {
-    active: "chatbubble",
-    inactive: "chatbubble-outline",
+    active: "storefront",
+    inactive: "storefront-outline",
   },
   [ROUTES.PROFILE]: {
     active: "person",
@@ -40,7 +40,7 @@ export default function MainTabs() {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarShowLabel: true,
-        tabBarActiveTintColor: "#4F46E5", // change to your brand color
+        tabBarActiveTintColor: "#E65100", // brand orange
         tabBarInactiveTintColor: "#9CA3AF",
         tabBarStyle: {
           backgroundColor: "#FFFFFF",
@@ -59,8 +59,8 @@ export default function MainTabs() {
       })}
     >
       <Tab.Screen name={ROUTES.HOME} component={HomeStack} />
-      <Tab.Screen name={ROUTES.ORDER} component={OrderScreen} />
-      <Tab.Screen name={ROUTES.INBOX} component={InboxScreen} />
+      <Tab.Screen name={ROUTES.ORDER} component={OrderScreen} options={{ title: "Orders" }} />
+      <Tab.Screen name={ROUTES.INBOX} component={InboxScreen} options={{ title: "Marketplace" }} />
       <Tab.Screen name={ROUTES.PROFILE} component={ProfileScreen} />
     </Tab.Navigator>
   );

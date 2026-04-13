@@ -7,7 +7,7 @@ import {
   Platform,
   ViewStyle,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, type Edge } from "react-native-safe-area-context";
 type WrapperContainerProps = {
   children: React.ReactNode;
   scroll?: boolean;
@@ -16,6 +16,7 @@ type WrapperContainerProps = {
   contentStyle?: ViewStyle;
   backgroundColor?: string;
   disablePadding?: boolean;
+  edges?: Edge[];
 };
 
 const WrapperContainer = ({
@@ -26,6 +27,7 @@ const WrapperContainer = ({
   contentStyle,
   backgroundColor = "#fff",
   disablePadding = false,
+  edges,
 }: WrapperContainerProps) => {
   const paddingStyle: ViewStyle | undefined = disablePadding
     ? undefined
@@ -54,7 +56,7 @@ const WrapperContainer = ({
 
   if (keyboardAvoiding) {
     return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor }]}>
+      <SafeAreaView style={[styles.safeArea, { backgroundColor }]} edges={edges}>
         <KeyboardAvoidingView
           style={styles.flex}
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -67,7 +69,7 @@ const WrapperContainer = ({
   }
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor }]}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor }]} edges={edges}>
       {content}
     </SafeAreaView>
   );

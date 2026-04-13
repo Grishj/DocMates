@@ -1,11 +1,15 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
+import { Header } from "@components/index";
 
 const OrderScreen = () => {
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>OrderScreen</Text>
-    </View>
+    <>
+      <Header title="My Screen" backgroundColor="red" showBackButton onBack={() => { }} />
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>OrderScreen</Text>
+      </View>
+    </>
   );
 };
 
