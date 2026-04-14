@@ -23,6 +23,8 @@ interface ModeContextProps {
   updateTaskStatus: (id: string, newStatus: string) => void;
   isDarkMode: boolean;
   setIsDarkMode: (dark: boolean) => void;
+  avatarUri: string | null;
+  setAvatarUri: (uri: string | null) => void;
 }
 
 const ModeContext = createContext<ModeContextProps | undefined>(undefined);
@@ -32,6 +34,7 @@ export const ModeProvider = ({ children }: { children: ReactNode }) => {
   const [isOnline, setIsOnline] = useState(true);
   const [acceptedTasks, setAcceptedTasks] = useState<DSTask[]>([]);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [avatarUri, setAvatarUri] = useState<string | null>(null);
 
   const addAcceptedTask = (task: DSTask) => {
     setAcceptedTasks((prev) => {
@@ -57,7 +60,9 @@ export const ModeProvider = ({ children }: { children: ReactNode }) => {
         addAcceptedTask,
         updateTaskStatus,
         isDarkMode,
-        setIsDarkMode
+        setIsDarkMode,
+        avatarUri,
+        setAvatarUri
       }}
     >
       {children}

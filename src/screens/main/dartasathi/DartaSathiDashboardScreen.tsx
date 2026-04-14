@@ -75,9 +75,12 @@ const ACTIVE_REQUESTS = [
 ];
 
 export default function DartaSathiDashboardScreen() {
-  const { isOnline, setIsOnline, addAcceptedTask, isDarkMode, setIsDarkMode } = useMode();
+  const { appMode, isOnline, setIsOnline, addAcceptedTask, isDarkMode, setIsDarkMode } = useMode();
   const insets = useSafeAreaInsets();
   const [leads, setLeads] = useState(INITIAL_LEADS);
+  
+  // Toggle this to test verified/unverified state
+  const isVerified = false;
 
   const handleAccept = (id: string) => {
     setLeads((prev) => {
@@ -112,17 +115,55 @@ export default function DartaSathiDashboardScreen() {
         <Spacer size="xl" />
 
         {/* ─── Greeting ────────────────────────────────────────────────── */}
-        <AppText variant="h1" weight="bold" color="#D15000">
-          Namaste, Suman!
-        </AppText>
+        <Row align="center" gap={SPACING.sm}>
+          <AppText variant="h1" weight="bold" color="#D15000">
+            Namaste, Suman!
+          </AppText>
+          <Box 
+            bg={isVerified ? "#E8F5E9" : "#FFF3E0"} 
+            paddingHorizontal={8} 
+            paddingVertical={4} 
+            radius={12}
+            style={{ marginTop: 4 }}
+          >
+            <Row align="center" gap={4}>
+              <Ionicons name={isVerified ? "checkmark-circle" : "time"} size={14} color={isVerified ? "#2E7D32" : "#E65100"} />
+              <AppText variant="micro" weight="bold" color={isVerified ? "#2E7D32" : "#E65100"}>
+                {isVerified ? "VERIFIED" : "UNVERIFIED"}
+              </AppText>
+            </Row>
+          </Box>
+        </Row>
         <Spacer size="xs" />
         <AppText variant="body" color={COLORS.textSecondary}>
-          {isOnline
-            ? "Your dashboard is ready for today's requests."
-            : "You're offline. Go online to receive today's requests."}
+          {isVerified 
+            ? isOnline
+              ? "Your dashboard is ready for today's requests."
+              : "You're offline. Go online to receive today's requests."
+            : "Your profile is currently under review."}
         </AppText>
 
+        {/* ─── App Mode Indicator ────────────────────────────────── */}
+        <Spacer size="md" />
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View style={{
+            backgroundColor: appMode === "Student" ? "#E3F2FD" : "#FFF3E0",
+            paddingHorizontal: 8,
+            paddingVertical: 4,
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: appMode === "Student" ? "#90CAF9" : "#FFCC80"
+          }}>
+            <AppText variant="micro" weight="bold" color={appMode === "Student" ? "#1976d2" : "#E65100"}>
+              {appMode === "Student" ? "CONSUMER MODE" : "DOCSMATE MODE"}
+            </AppText>
+          </View>
+        </View>
+
         <Spacer size="lg" />
+
+        {isVerified ? (
+          <>
 
         {/* ─── Toggle Online/Offline ───────────────────────────────────── */}
         <View style={styles.toggleContainer}>
@@ -324,7 +365,7 @@ export default function DartaSathiDashboardScreen() {
           </View>
         )}
 
-        <Spacer size="xxl" />
+        <Spacer size="xxxl" />
 
         {/* ─── Active Requests (Vertical List) ─────────────────────────── */}
         <AppText variant="h3" weight="bold" color="#000000">
@@ -390,16 +431,21 @@ export default function DartaSathiDashboardScreen() {
         ))}
 
         <Spacer size="xxxl" />
+          </>
+        ) : (
+          <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: SPACING.xxxl }}>
+            <Ionicons name="time-outline" size={64} color="#E65100" />
+            <Spacer size="md" />
+            <AppText variant="h2" weight="bold" color="#000000" align="center">
+              Verification Pending
+            </AppText>
+            <Spacer size="sm" />
+            <AppText variant="body" color={COLORS.textSecondary} align="center" style={{ paddingHorizontal: SPACING.lg }}>
+              Your details are currently being reviewed. We will notify you once you are approved to start accepting tasks!
+            </AppText>
+          </View>
+        )}
       </ScrollView>
-
-      {/* Floating Action Button (Matches image bottom right overlay) */}
-      <TouchableOpacity style={styles.fab} activeOpacity={0.8}>
-        <Ionicons name="chatbubbles" size={24} color={COLORS.white} />
-        <View style={styles.fabBadge}>
-          <Ionicons name="checkmark" size={10} color={COLORS.white} />
-        </View>
-      </TouchableOpacity>
-
     </View>
   );
 }

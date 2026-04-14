@@ -3,7 +3,7 @@ import {
   View,
   TouchableOpacity,
   Modal,
-  FlatList,
+  ScrollView,
   StyleSheet,
   ViewStyle,
 } from "react-native";
@@ -113,30 +113,30 @@ const Dropdown = ({
               {label ?? placeholder}
             </AppText>
 
-            <FlatList
-              data={options}
-              keyExtractor={(item) => String(item.value)}
-              ItemSeparatorComponent={() => <View style={styles.separator} />}
-              renderItem={({ item }) => {
+            <ScrollView style={{ flexGrow: 0 }}>
+              {options.map((item, index) => {
                 const isSelected = item.value === value;
                 return (
-                  <TouchableOpacity
-                    style={[styles.option, isSelected && styles.optionSelected]}
-                    onPress={() => handleSelect(item)}
-                    activeOpacity={0.7}
-                  >
-                    <AppText
-                      variant="body"
-                      color={isSelected ? COLORS.primary : COLORS.textPrimary}
-                      weight={isSelected ? "semibold" : "regular"}
+                  <View key={String(item.value)}>
+                    <TouchableOpacity
+                      style={[styles.option, isSelected && styles.optionSelected]}
+                      onPress={() => handleSelect(item)}
+                      activeOpacity={0.7}
                     >
-                      {item.label}
-                    </AppText>
-                    {isSelected && <View style={styles.dot} />}
-                  </TouchableOpacity>
+                      <AppText
+                        variant="body"
+                        color={isSelected ? COLORS.primary : COLORS.textPrimary}
+                        weight={isSelected ? "semibold" : "regular"}
+                      >
+                        {item.label}
+                      </AppText>
+                      {isSelected && <View style={styles.dot} />}
+                    </TouchableOpacity>
+                    {index < options.length - 1 && <View style={styles.separator} />}
+                  </View>
                 );
-              }}
-            />
+              })}
+            </ScrollView>
           </View>
         </TouchableOpacity>
       </Modal>

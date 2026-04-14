@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, RADIUS, SPACING, TYPOGRAPHY, SHADOWS } from "../theme";
-import { AppText } from "./index";
+import AppText from "./ui/Text";
 
 type SearchBarVariant = "default" | "filled" | "outline";
 

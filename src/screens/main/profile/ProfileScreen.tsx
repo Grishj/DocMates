@@ -1,5 +1,6 @@
-import { StyleSheet, View, SafeAreaView, ScrollView, TouchableOpacity, Image, Share } from "react-native";
+import { StyleSheet, View, SafeAreaView, ScrollView, TouchableOpacity, Image, Share, Alert, Modal, Pressable } from "react-native";
 import React, { useState } from "react";
+import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from "../../../theme";
 import { AppText, Card, Row, Column, Box, Spacer, Avatar } from "@components/index";
@@ -8,12 +9,48 @@ import { useMode } from "../../../store/ModeContext";
 import { ROUTES } from "../../../constants";
 
 export default function ProfileScreen({ navigation }: any) {
-  const { appMode: activeTab, setAppMode: setActiveTab, isOnline, setIsOnline } = useMode();
+  const { appMode: activeTab, setAppMode: setActiveTab, avatarUri, setAvatarUri } = useMode();
+  const [showImageOptions, setShowImageOptions] = useState(false);
+
+  const handleTakePhoto = async () => {
+    setShowImageOptions(false);
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'Sorry, we need camera permissions to make this work!');
+      return;
+    }
+    let result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
+    });
+    if (!result.canceled && result.assets && result.assets[0]) {
+      setAvatarUri(result.assets[0].uri);
+    }
+  };
+
+  const handleChooseGallery = async () => {
+    setShowImageOptions(false);
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
+    });
+    if (!result.canceled && result.assets && result.assets[0]) {
+      setAvatarUri(result.assets[0].uri);
+    }
+  };
 
   const handleShare = async () => {
     try {
       await Share.share({
-        message: 'Check out DocMate! It’s the easiest way to get university documents processed in Nepal. Download it now!',
+        message: 'Check out DocsMate! It’s the easiest way to get university documents processed in Nepal. Download it now!',
       });
     } catch (error) {
       console.error(error);
@@ -26,16 +63,16 @@ export default function ProfileScreen({ navigation }: any) {
 
         {/* ─── Profile Header ────────────────────────────────────────── */}
         <Column align="center" style={styles.headerSection}>
-          <View style={styles.avatarContainer}>
+          <TouchableOpacity style={styles.avatarContainer} onPress={() => setShowImageOptions(true)} activeOpacity={0.9}>
             <Image
-              source={{ uri: "https://i.pravatar.cc/150?img=11" }}
+              source={{ uri: avatarUri || "https://i.pravatar.cc/150?img=11" }}
               style={styles.avatarImage}
             />
-            {/* Verification Badge */}
-            <View style={styles.badgeContainer}>
-              <Ionicons name="checkmark-circle" size={18} color="#C24F00" />
+            {/* Camera Overlay Badge (was Verification) */}
+            <View style={[styles.badgeContainer, { backgroundColor: COLORS.primary, padding: 4, borderRadius: 16, bottom: 0, right: 0 }]}>
+              <Ionicons name="camera" size={14} color="#FFF" />
             </View>
-          </View>
+          </TouchableOpacity>
 
           <Spacer size="xs" />
           <AppText variant="h3" weight="bold" color="#000000">
@@ -61,7 +98,7 @@ export default function ProfileScreen({ navigation }: any) {
               color={activeTab === "Student" ? COLORS.white : COLORS.textSecondary}
               align="center"
             >
-              Student Mode
+              Consumer Mode
             </AppText>
           </TouchableOpacity>
           <TouchableOpacity
@@ -75,64 +112,40 @@ export default function ProfileScreen({ navigation }: any) {
               color={activeTab === "DartaSathi" ? COLORS.white : COLORS.textSecondary}
               align="center"
             >
-              DartaSathi Mode
+              DocsMate Mode
             </AppText>
           </TouchableOpacity>
         </View>
 
         <Spacer size="lg" />
 
-        {/* ─── Saved Documents ───────────────────────────────────────── */}
-        <Card variant="flat" padding={SPACING.lg} style={styles.savedDocsCard}>
-          <Row justify="space-between" align="center">
-            <Row gap={SPACING.md} align="center">
-              <Box width={40} height={40} radius={RADIUS.md} bg="#0066FF" align="center" justify="center">
-                <Ionicons name="folder" size={20} color={COLORS.white} />
-              </Box>
-              <Column>
-                <AppText variant="body" weight="bold" color="#000000">
-                  Saved Documents
-                </AppText>
-                <AppText variant="micro" color={COLORS.textSecondary}>
-                  12 Files Encrypted
-                </AppText>
-              </Column>
-            </Row>
-            <Ionicons name="chevron-forward" size={20} color={COLORS.textMuted} />
-          </Row>
-        </Card>
 
-        <Spacer size="md" />
 
         {/* ─── Grid Menu (Order History / Settings) ──────────────────── */}
         <Row gap={SPACING.md}>
-          <TouchableOpacity style={{ flex: 1 }} activeOpacity={0.8} onPress={() => navigation.navigate(ROUTES.REQUEST_HISTORY as any)}>
-            <Card variant="flat" padding={SPACING.lg} style={[styles.gridCard, { flex: 0 }]}>
-              <Ionicons name="receipt-outline" size={24} color="#5C6BC0" style={styles.gridIcon} />
-              <Spacer size="md" />
-              <AppText variant="caption" weight="bold" color="#000000">
-                {activeTab === "DartaSathi" ? "Order History" : "Request History"}
-              </AppText>
-              <Spacer size="xxs" />
-              <AppText variant="micro" color={COLORS.textMuted} style={styles.gridDesc}>
-                View previous registrations
-              </AppText>
-            </Card>
-          </TouchableOpacity>
+          <Card variant="flat" padding={SPACING.lg} style={styles.gridCard} onPress={() => navigation.navigate(ROUTES.REQUEST_HISTORY as any)}>
+            <Ionicons name="receipt-outline" size={24} color="#5C6BC0" style={styles.gridIcon} />
+            <Spacer size="md" />
+            <AppText variant="caption" weight="bold" color="#000000">
+              {activeTab === "DartaSathi" ? "Order History" : "Request History"}
+            </AppText>
+            <Spacer size="xxs" />
+            <AppText variant="micro" color={COLORS.textMuted} style={styles.gridDesc}>
+              View previous registrations
+            </AppText>
+          </Card>
 
-          <TouchableOpacity style={{ flex: 1 }} activeOpacity={0.8} onPress={() => navigation.navigate(ROUTES.SETTINGS as any)}>
-            <Card variant="flat" padding={SPACING.lg} style={[styles.gridCard, { flex: 0 }]}>
-              <Ionicons name="settings-outline" size={24} color="#8D6E63" style={styles.gridIcon} />
-              <Spacer size="md" />
-              <AppText variant="caption" weight="bold" color="#000000">
-                Settings
-              </AppText>
-              <Spacer size="xxs" />
-              <AppText variant="micro" color={COLORS.textMuted} style={styles.gridDesc}>
-                Security &{"\n"}Preferences
-              </AppText>
-            </Card>
-          </TouchableOpacity>
+          <Card variant="flat" padding={SPACING.lg} style={styles.gridCard} onPress={() => navigation.navigate(ROUTES.SETTINGS as any)}>
+            <Ionicons name="settings-outline" size={24} color="#8D6E63" style={styles.gridIcon} />
+            <Spacer size="md" />
+            <AppText variant="caption" weight="bold" color="#000000">
+              Settings
+            </AppText>
+            <Spacer size="xxs" />
+            <AppText variant="micro" color={COLORS.textMuted} style={styles.gridDesc}>
+              Security &{"\n"}Preferences
+            </AppText>
+          </Card>
         </Row>
 
         <Spacer size="md" />
@@ -145,7 +158,7 @@ export default function ProfileScreen({ navigation }: any) {
                 SPREAD THE WORD
               </AppText>
               <AppText variant="body" weight="bold" color={COLORS.white}>
-                Share DocMate App
+                Share DocsMate App
               </AppText>
             </Column>
             <TouchableOpacity style={styles.copyButton} onPress={handleShare}>
@@ -218,6 +231,31 @@ export default function ProfileScreen({ navigation }: any) {
 
         <Spacer size="xxxl" />
       </ScrollView>
+
+      {/* ─── Image Picker Modal ────────────────────────────────────── */}
+      <Modal visible={showImageOptions} transparent animationType="fade" onRequestClose={() => setShowImageOptions(false)}>
+        <Pressable style={styles.modalOverlay} onPress={() => setShowImageOptions(false)}>
+          <View style={styles.modalContent}>
+            <AppText variant="body" weight="bold" color="#000" style={{ marginBottom: SPACING.lg }}>
+              Change Profile Picture
+            </AppText>
+            <Row gap={SPACING.xxl} justify="center">
+              <TouchableOpacity style={styles.modalOption} onPress={handleTakePhoto} activeOpacity={0.7}>
+                <Box width={56} height={56} radius={28} bg="#E1F5FE" align="center" justify="center" style={{ marginBottom: 8 }}>
+                  <Ionicons name="camera" size={26} color="#0288D1" />
+                </Box>
+                <AppText variant="micro" weight="bold" color="#333">Camera</AppText>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modalOption} onPress={handleChooseGallery} activeOpacity={0.7}>
+                <Box width={56} height={56} radius={28} bg="#E8F5E9" align="center" justify="center" style={{ marginBottom: 8 }}>
+                  <Ionicons name="image" size={26} color="#2E7D32" />
+                </Box>
+                <AppText variant="micro" weight="bold" color="#333">Gallery</AppText>
+              </TouchableOpacity>
+            </Row>
+          </View>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -377,5 +415,28 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.border,
     marginVertical: SPACING.sm,
     marginLeft: 40, // Aligns with the text
+  },
+
+  // Modal rules
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: RADIUS.lg,
+    padding: SPACING.xl,
+    width: '80%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  modalOption: {
+    alignItems: 'center',
   },
 });

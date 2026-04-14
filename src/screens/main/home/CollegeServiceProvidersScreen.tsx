@@ -101,7 +101,6 @@ const SERVICE_PROVIDERS = [
     description:
       "Final year engineering student at Paschimanchal Campus. Helping students with documentation and abroad studies.",
     phone: "9812345678",
-    email: "grish.joshi@example.com",
     priceRange: "Rs. 500 - 1500", // ✅ ADD THIS
 
     avatar: null,
@@ -118,7 +117,6 @@ const SERVICE_PROVIDERS = [
     description:
       "Verified bartabandhi specializing in TU document facilitation. Over 3 years of experience in university documentation.",
     phone: "9823456789",
-    email: "suman.thapa@example.com",
     avatar: null,
     verified: true,
     priceRange: "Rs. 500 - 1500", // ✅ ADD THIS
@@ -135,7 +133,6 @@ const SERVICE_PROVIDERS = [
     description:
       "Experienced education consultant helping students navigate college-level documentation processes efficiently.",
     phone: "9834567890",
-    email: "anisha.gurung@example.com",
     avatar: null,
     verified: true,
     priceRange: "Rs. 500 - 1500", // ✅ ADD THIS
@@ -152,7 +149,6 @@ const SERVICE_PROVIDERS = [
     description:
       "ABC Education Consultancy — Helping students with documentation and abroad studies since 2019.",
     phone: "9845678901",
-    email: "rajesh.adhikari@example.com",
     avatar: null,
     verified: false,
     priceRange: "Rs. free - 500", // ✅ ADD THIS
@@ -339,7 +335,6 @@ function ProviderCard({
           </View>
         </Row>
 
-        {/* ─── View Profile Link ───────────────────────── */}
         <Spacer size="md" />
         <TouchableOpacity onPress={onRequestService} style={styles.viewProfileBtn}>
           <Ionicons
@@ -596,20 +591,7 @@ export default function CollegeServiceProvidersScreen({
             provider={item}
             onCall={() => handleCall(item.phone)}
             onWhatsApp={() => handleWhatsApp(item.phone)}
-            onRequestService={() => {
-              navigation.navigate(ROUTES.CONFIRM_REQUEST, {
-                service: serviceName,
-                college: collegeName,
-                university: route?.params?.university ?? "",
-                provider: {
-                  name: item.name,
-                  location: item.location,
-                  campus: item.campus,
-                  priceRange: item.priceRange,
-                  rating: item.rating,
-                },
-              });
-            }}
+            onRequestService={() => { }}
           />
         )}
       />

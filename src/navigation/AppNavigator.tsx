@@ -7,16 +7,13 @@ import { ModeProvider } from "../store/ModeContext";
 const Stack = createStackNavigator();
 
 export default function AppNavigator() {
-  const isLoggedIn = true; //  change to true to test MainTabs
+  const isLoggedIn = false; //  change to true to test MainTabs
 
   return (
     <ModeProvider>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {isLoggedIn ? (
-          <Stack.Screen name="Main" component={MainTabs} />
-        ) : (
-          <Stack.Screen name="Auth" component={AuthStack} />
-        )}
+        <Stack.Screen name="Auth" component={AuthStack} />
+        <Stack.Screen name="Main" component={MainTabs} />
       </Stack.Navigator>
     </ModeProvider>
   );

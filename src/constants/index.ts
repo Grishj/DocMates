@@ -20,6 +20,8 @@ export const ROUTES = {
   ONBOARDING: "Onboarding",
   SIGNIN: "SignIn",
   SIGNUP: "SignUp",
+  ROLE_SELECTION: "RoleSelection",
+  PROVIDER_VERIFICATION: "ProviderVerification",
 
   // ──────────────────
   // home
@@ -37,6 +39,7 @@ export const ROUTES = {
   CHECKOUT: "Checkout",
   PAYMENT: "Payment",
   ORDER_SUCCESS: "OrderSuccess",
+  ALL_SERVICES: "AllServices",
 
   // ──────────────────
   // order

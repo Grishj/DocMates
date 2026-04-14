@@ -16,6 +16,7 @@ import ConfirmRequestScreen from "@screens/main/home/ConfirmRequestScreen";
 import RequestSuccessScreen from "@screens/main/home/RequestSuccessScreen";
 import PaymentScreen from "@screens/main/home/PaymentScreen";
 import OrderSuccessScreen from "@screens/main/home/OrderSuccessScreen";
+import AllServicesScreen from "@screens/main/home/AllServicesScreen";
 
 const Stack = createStackNavigator();
 
@@ -42,6 +43,7 @@ export default function HomeStack() {
         name={ROUTES.ORDER_SUCCESS}
         component={OrderSuccessScreen}
       />
+      <Stack.Screen name={ROUTES.ALL_SERVICES} component={AllServicesScreen} />
     </Stack.Navigator>
   );
 }

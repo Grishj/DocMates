@@ -27,7 +27,7 @@ import { useMode } from "../../../store/ModeContext";
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 // ─── Service Data ──────────────────────────────────────────────
-const SERVICES = [
+export const SERVICES = [
   {
     id: "transcript",
     title: "Transcript",
@@ -81,7 +81,7 @@ const SERVICES = [
 // ─── HomeScreen Component ──────────────────────────────────────
 const HomeScreen = ({ navigation }: { navigation: any }) => {
   const [searchText, setSearchText] = useState("");
-  const { isDarkMode, setIsDarkMode } = useMode();
+  const { appMode, isDarkMode, setIsDarkMode } = useMode();
 
   return (
     <>
@@ -125,6 +125,23 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
           Need something done for you today?
         </AppText>
 
+        {/* ─── App Mode Indicator ────────────────────────────────── */}
+        <Spacer size="xs" />
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View style={{
+            backgroundColor: appMode === "Student" ? "#E3F2FD" : "#FFF3E0",
+            paddingHorizontal: 8,
+            paddingVertical: 4,
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: appMode === "Student" ? "#90CAF9" : "#FFCC80"
+          }}>
+            <AppText variant="micro" weight="bold" color={appMode === "Student" ? "#1976d2" : "#E65100"}>
+              {appMode === "Student" ? "CONSUMER MODE" : "DOCSMATE MODE"}
+            </AppText>
+          </View>
+        </View>
+
         {/* ─── Search Bar ────────────────────────────────────── */}
         <Spacer size="md" />
         <SearchBar
@@ -145,48 +162,7 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
           showSuggestionsOnFocus={false}
         />
 
-        {/* ─── Stats Row ─────────────────────────────────────── */}
-        <Spacer size="lg" />
-        <Row justify="space-between" gap={SPACING.sm}>
-          <Card
-            variant="outlined"
-            padding={SPACING.md}
-            style={styles.statCard}
-          >
-            <Row gap={SPACING.sm}>
-              <View style={styles.statIconWrap}>
-                <Ionicons
-                  name="checkmark-done-circle"
-                  size={20}
-                  color={COLORS.success}
-                />
-              </View>
-              <View style={{ flex: 1 }}>
-                <AppText
-                  variant="caption"
-                  weight="bold"
-                  color={COLORS.success}
-                >
-                  1,247 documents delivered
-                </AppText>
-              </View>
-            </Row>
-          </Card>
 
-          <Card
-            variant="outlined"
-            padding={SPACING.md}
-            style={styles.phoneCard}
-            onPress={() => { }}
-          >
-            <Row gap={SPACING.xs}>
-              <Ionicons name="call-outline" size={18} color={COLORS.primary} />
-              <AppText variant="caption" weight="bold" color={COLORS.primary}>
-                98..
-              </AppText>
-            </Row>
-          </Card>
-        </Row>
 
         {/* ─── Essential Services ────────────────────────────── */}
         <Spacer size="xl" />
@@ -194,7 +170,7 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
           <AppText variant="h2" weight="bold" color={COLORS.textPrimary}>
             Essential Services
           </AppText>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate(ROUTES.ALL_SERVICES as any)}>
             <AppText variant="caption" weight="semibold" color={COLORS.primary}>
               View All
             </AppText>
@@ -283,19 +259,8 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
           </View>
         </View>
 
-        {/* ─── Bottom spacer for FAB clearance ───────────────── */}
-        <Spacer size="xxxl" />
         <Spacer size="xxxl" />
       </WrapperContainer>
-
-      {/* ─── FAB ─────────────────────────────────────────────── */}
-      <FAB
-        size="md"
-        color={COLORS.primary}
-        onPress={() => {
-          navigation.navigate(ROUTES.DETAIL);
-        }}
-      />
     </>
   );
 };
