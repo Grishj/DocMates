@@ -22,6 +22,7 @@ import {
   Button,
   Chip,
 } from "@components/index";
+import { useMode } from "../../../store/ModeContext";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -80,13 +81,7 @@ const SERVICES = [
 // ─── HomeScreen Component ──────────────────────────────────────
 const HomeScreen = ({ navigation }: { navigation: any }) => {
   const [searchText, setSearchText] = useState("");
-  const [language, setLanguage] = useState<"EN" | "NP">("EN");
-  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
-
-  const selectLanguage = (lang: "EN" | "NP") => {
-    setLanguage(lang);
-    setLangDropdownOpen(false);
-  };
+  const { isDarkMode, setIsDarkMode } = useMode();
 
   return (
     <>
@@ -112,79 +107,11 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
           </AppText>
         }
         rightIcon={
-          <View style={styles.languageChip}>
-            <Ionicons name="globe-outline" size={14} color={COLORS.primary} />
-            <AppText
-              variant="micro"
-              weight="semibold"
-              color={COLORS.primary}
-              style={{ marginLeft: 3 }}
-            >
-              {language === "EN" ? "EN" : "NP"}
-            </AppText>
-            <Ionicons
-              name={langDropdownOpen ? "chevron-up" : "chevron-down"}
-              size={12}
-              color={COLORS.primary}
-              style={{ marginLeft: 2 }}
-            />
-          </View>
+          <Ionicons name={isDarkMode ? "moon" : "sunny"} size={24} color={COLORS.primary} />
         }
         rightIconStyle={{ width: "auto" as any, height: "auto" as any }}
-        rightAction={() => setLangDropdownOpen((prev) => !prev)}
+        rightAction={() => setIsDarkMode(!isDarkMode)}
       />
-
-      {/* ─── Language Dropdown ─────────────────────────────── */}
-      {langDropdownOpen && (
-        <>
-          <TouchableOpacity
-            style={styles.langOverlay}
-            activeOpacity={1}
-            onPress={() => setLangDropdownOpen(false)}
-          />
-          <View style={styles.langDropdown}>
-            <TouchableOpacity
-              style={styles.langOption}
-              activeOpacity={0.7}
-              onPress={() => selectLanguage("EN")}
-            >
-              <Ionicons name="language-outline" size={18} color={language === "EN" ? COLORS.primary : COLORS.textMuted} />
-              <AppText
-                variant="caption"
-                weight={language === "EN" ? "bold" : "medium"}
-                color={language === "EN" ? COLORS.primary : COLORS.textPrimary}
-                style={{ flex: 1, marginLeft: SPACING.sm }}
-              >
-                English
-              </AppText>
-              {language === "EN" && (
-                <Ionicons name="checkmark-circle" size={18} color={COLORS.primary} />
-              )}
-            </TouchableOpacity>
-
-            <View style={styles.langDivider} />
-
-            <TouchableOpacity
-              style={styles.langOption}
-              activeOpacity={0.7}
-              onPress={() => selectLanguage("NP")}
-            >
-              <Ionicons name="language-outline" size={18} color={language === "NP" ? COLORS.primary : COLORS.textMuted} />
-              <AppText
-                variant="caption"
-                weight={language === "NP" ? "bold" : "medium"}
-                color={language === "NP" ? COLORS.primary : COLORS.textPrimary}
-                style={{ flex: 1, marginLeft: SPACING.sm, fontFamily: FONTS.nepalisemibold }}
-              >
-                नेपाली
-              </AppText>
-              {language === "NP" && (
-                <Ionicons name="checkmark-circle" size={18} color={COLORS.primary} />
-              )}
-            </TouchableOpacity>
-          </View>
-        </>
-      )}
 
       <WrapperContainer scroll backgroundColor={COLORS.surface} edges={['left', 'right']}>
         {/* ─── Tagline ───────────────────────────────────────── */}

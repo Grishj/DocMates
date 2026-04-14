@@ -11,6 +11,7 @@ export const ROUTES = {
   DS_DASHBOARD: "DSDashboard",
   DS_TASKS: "DSTasks",
   DS_EARNINGS: "DSEarnings",
+  DS_INBOX: "DSInbox",
 
   // ──────────────────
   // auth
@@ -58,6 +59,10 @@ export const ROUTES = {
   EDIT_PROFILE: "EditProfile",
   SETTINGS: "Settings",
   CHANGE_PASSWORD: "ChangePassword",
+  HELP_SUPPORT: "HelpSupport",
+  PRIVACY_POLICY: "PrivacyPolicy",
+  TERMS_CONDITIONS: "TermsConditions",
+  REQUEST_HISTORY: "RequestHistory",
 
   // ──────────────────
   // notifications

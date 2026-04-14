@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import {
   StyleSheet,
   View,
-  SafeAreaView,
   ScrollView,
   TouchableOpacity,
   FlatList,
   Linking,
   Image,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, SPACING, RADIUS } from "../../../theme";
 import { AppText, Card, Row, Column, Box, Spacer, Button } from "@components/index";
@@ -75,7 +75,8 @@ const ACTIVE_REQUESTS = [
 ];
 
 export default function DartaSathiDashboardScreen() {
-  const { isOnline, setIsOnline, addAcceptedTask } = useMode();
+  const { isOnline, setIsOnline, addAcceptedTask, isDarkMode, setIsDarkMode } = useMode();
+  const insets = useSafeAreaInsets();
   const [leads, setLeads] = useState(INITIAL_LEADS);
 
   const handleAccept = (id: string) => {
@@ -94,22 +95,17 @@ export default function DartaSathiDashboardScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={[styles.safeArea, { paddingTop: insets.top }]}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
 
         {/* ─── Header ──────────────────────────────────────────────────── */}
         <Row justify="space-between" align="center">
-          <TouchableOpacity hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-            <Ionicons name="menu-outline" size={28} color="#000000" />
-          </TouchableOpacity>
-          <AppText variant="h3" weight="bold" color="#D15000">
+
+          <AppText variant="h2" weight="bold" color="#D15000" >
             SajiloDarta
           </AppText>
-          <TouchableOpacity>
-            <Image
-              source={{ uri: "https://i.pravatar.cc/150?img=11" }}
-              style={styles.avatarMini}
-            />
+          <TouchableOpacity onPress={() => setIsDarkMode(!isDarkMode)}>
+            <Ionicons name={isDarkMode ? "moon" : "sunny"} size={24} color="#000000" />
           </TouchableOpacity>
         </Row>
 
@@ -121,7 +117,9 @@ export default function DartaSathiDashboardScreen() {
         </AppText>
         <Spacer size="xs" />
         <AppText variant="body" color={COLORS.textSecondary}>
-          Your dashboard is ready for today's requests.
+          {isOnline
+            ? "Your dashboard is ready for today's requests."
+            : "You're offline. Go online to receive today's requests."}
         </AppText>
 
         <Spacer size="lg" />
@@ -208,98 +206,123 @@ export default function DartaSathiDashboardScreen() {
 
 
         {/* ─── New Leads (Horizontal Scroll) ───────────────────────────── */}
-        <Row justify="space-between" align="center">
-          <AppText variant="h3" weight="bold" color="#000000">
-            New Leads
-          </AppText>
-          <TouchableOpacity>
-            <AppText variant="micro" weight="bold" color="#D15000">
-              See All &gt;
-            </AppText>
-          </TouchableOpacity>
-        </Row>
-        <Spacer size="md" />
-
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingRight: SPACING.lg }}
-          style={{ marginHorizontal: -SPACING.lg, paddingLeft: SPACING.lg }}
-        >
-          {leads.map((lead) => (
-            <Card key={lead.id} variant="flat" padding={SPACING.md} style={styles.leadCard}>
-              <Row justify="space-between" align="flex-start">
-                <Row gap={SPACING.sm} style={{ flex: 1 }}>
-                  <Box width={24} height={24} radius={12} bg="#FFF3E0" align="center" justify="center">
-                    <Ionicons name="document-text" size={12} color="#E65100" />
-                  </Box>
-                  <Column flex={1}>
-                    <Row align="center" gap={SPACING.xs}>
-                      <AppText variant="body" weight="bold" color="#000000" numberOfLines={1}>
-                        {lead.service}
-                      </AppText>
-                      <Box bg="#FFF3E0" paddingHorizontal={6} paddingVertical={2} radius={4}>
-                        <AppText variant="micro" color="#E65100" weight="bold" style={{ fontSize: 8 }}>
-                          {lead.type}
-                        </AppText>
-                      </Box>
-                    </Row>
-                    <Spacer size="xxs" />
-                    <AppText variant="micro" color={COLORS.textSecondary}>
-                      {lead.university}
-                    </AppText>
-                  </Column>
-                </Row>
-              </Row>
-
-              <Spacer size="md" />
-
-              <Row gap={SPACING.sm} align="center">
-                <Ionicons name="location" size={14} color={COLORS.textMuted} />
-                <AppText variant="micro" color={COLORS.textSecondary}>
-                  {lead.location}
+        {isOnline ? (
+          <>
+            <Row justify="space-between" align="center">
+              <AppText variant="h3" weight="bold" color="#000000">
+                New Leads
+              </AppText>
+              <TouchableOpacity>
+                <AppText variant="micro" weight="bold" color="#D15000">
+                  See All &gt;
                 </AppText>
-              </Row>
+              </TouchableOpacity>
+            </Row>
+            <Spacer size="md" />
 
-              <Spacer size="lg" />
-
-              {lead.status === "Pending" ? (
-                <Row gap={SPACING.md}>
-                  <TouchableOpacity style={[styles.leadBtn, { backgroundColor: '#F3F4F6' }]}>
-                    <AppText variant="caption" weight="bold" color={COLORS.textSecondary} align="center">
-                      Decline
-                    </AppText>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.leadBtn, { backgroundColor: '#D15000' }]}
-                    onPress={() => handleAccept(lead.id)}
-                  >
-                    <AppText variant="caption" weight="bold" color={COLORS.white} align="center">
-                      Accept
-                    </AppText>
-                  </TouchableOpacity>
-                </Row>
-              ) : (
-                <View style={{ backgroundColor: "#E8F5E9", padding: SPACING.md, borderRadius: RADIUS.md }}>
-                  <Row justify="space-between" align="center">
-                    <Column>
-                      <AppText variant="micro" color={COLORS.textSecondary}>Client</AppText>
-                      <AppText variant="caption" weight="bold" color="#2E7D32">{lead.userName}</AppText>
-                    </Column>
-                    <TouchableOpacity
-                      style={{ backgroundColor: "#25D366", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, flexDirection: 'row', alignItems: 'center' }}
-                      onPress={() => handleWhatsApp(lead.userPhone)}
-                    >
-                      <Ionicons name="logo-whatsapp" size={14} color={COLORS.white} />
-                      <Spacer size="xs" />
-                      <AppText variant="micro" weight="bold" color={COLORS.white}>Chat</AppText>
-                    </TouchableOpacity>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingRight: SPACING.lg }}
+              style={{ marginHorizontal: -SPACING.lg, paddingLeft: SPACING.lg }}
+            >
+              {leads.map((lead) => (
+                <Card key={lead.id} variant="flat" padding={SPACING.md} style={styles.leadCard}>
+                  <Row justify="space-between" align="flex-start">
+                    <Row gap={SPACING.sm} style={{ flex: 1 }}>
+                      <Box width={24} height={24} radius={12} bg="#FFF3E0" align="center" justify="center">
+                        <Ionicons name="document-text" size={12} color="#E65100" />
+                      </Box>
+                      <Column flex={1}>
+                        <Row align="center" gap={SPACING.xs}>
+                          <AppText variant="body" weight="bold" color="#000000" numberOfLines={1}>
+                            {lead.service}
+                          </AppText>
+                          <Box bg="#FFF3E0" paddingHorizontal={6} paddingVertical={2} radius={4}>
+                            <AppText variant="micro" color="#E65100" weight="bold" style={{ fontSize: 8 }}>
+                              {lead.type}
+                            </AppText>
+                          </Box>
+                        </Row>
+                        <Spacer size="xxs" />
+                        <AppText variant="micro" color={COLORS.textSecondary}>
+                          {lead.university}
+                        </AppText>
+                      </Column>
+                    </Row>
                   </Row>
-                </View>
-              )}
-            </Card>
-          ))}
-        </ScrollView>
+
+                  <Spacer size="md" />
+
+                  <Row gap={SPACING.sm} align="center">
+                    <Ionicons name="location" size={14} color={COLORS.textMuted} />
+                    <AppText variant="micro" color={COLORS.textSecondary}>
+                      {lead.location}
+                    </AppText>
+                  </Row>
+
+                  <Spacer size="lg" />
+
+                  {lead.status === "Pending" ? (
+                    <Row gap={SPACING.md}>
+                      <TouchableOpacity style={[styles.leadBtn, { backgroundColor: '#F3F4F6' }]}>
+                        <AppText variant="caption" weight="bold" color={COLORS.textSecondary} align="center">
+                          Decline
+                        </AppText>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[styles.leadBtn, { backgroundColor: '#D15000' }]}
+                        onPress={() => handleAccept(lead.id)}
+                      >
+                        <AppText variant="caption" weight="bold" color={COLORS.white} align="center">
+                          Accept
+                        </AppText>
+                      </TouchableOpacity>
+                    </Row>
+                  ) : (
+                    <View style={{ backgroundColor: "#E8F5E9", padding: SPACING.md, borderRadius: RADIUS.md }}>
+                      <Row justify="space-between" align="center">
+                        <Column>
+                          <AppText variant="micro" color={COLORS.textSecondary}>Client</AppText>
+                          <AppText variant="caption" weight="bold" color="#2E7D32">{lead.userName}</AppText>
+                        </Column>
+                        <TouchableOpacity
+                          style={{ backgroundColor: "#25D366", paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, flexDirection: 'row', alignItems: 'center' }}
+                          onPress={() => handleWhatsApp(lead.userPhone)}
+                        >
+                          <Ionicons name="logo-whatsapp" size={14} color={COLORS.white} />
+                          <Spacer size="xs" />
+                          <AppText variant="micro" weight="bold" color={COLORS.white}>Chat</AppText>
+                        </TouchableOpacity>
+                      </Row>
+                    </View>
+                  )}
+                </Card>
+              ))}
+            </ScrollView>
+          </>
+        ) : (
+          <View style={{ paddingVertical: SPACING.xl, alignItems: 'center', backgroundColor: '#F3F4F6', borderRadius: RADIUS.lg, borderWidth: 1, borderColor: '#E5E7EB' }}>
+            <Ionicons name="moon" size={48} color="#9CA3AF" />
+            <Spacer size="md" />
+            <AppText variant="body" weight="bold" color="#4B5563" align="center">
+              You are currently Offline
+            </AppText>
+            <Spacer size="xs" />
+            <AppText variant="caption" color="#6B7280" align="center">
+              Go online to see new feeds for today
+            </AppText>
+            <Spacer size="lg" />
+            <TouchableOpacity
+              style={{ backgroundColor: '#D15000', paddingHorizontal: 24, paddingVertical: 10, borderRadius: 20 }}
+              onPress={() => setIsOnline(true)}
+            >
+              <AppText variant="caption" weight="bold" color="#FFFFFF">
+                Go Online
+              </AppText>
+            </TouchableOpacity>
+          </View>
+        )}
 
         <Spacer size="xxl" />
 
@@ -377,7 +400,7 @@ export default function DartaSathiDashboardScreen() {
         </View>
       </TouchableOpacity>
 
-    </SafeAreaView>
+    </View>
   );
 }
 

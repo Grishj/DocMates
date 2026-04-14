@@ -1,12 +1,24 @@
-import { StyleSheet, View, SafeAreaView, ScrollView, TouchableOpacity, Image } from "react-native";
+import { StyleSheet, View, SafeAreaView, ScrollView, TouchableOpacity, Image, Share } from "react-native";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { COLORS, SPACING, RADIUS, TYPOGRAPHY } from "../../../theme";
 import { AppText, Card, Row, Column, Box, Spacer, Avatar } from "@components/index";
 import { useMode } from "../../../store/ModeContext";
 
-export default function ProfileScreen() {
+import { ROUTES } from "../../../constants";
+
+export default function ProfileScreen({ navigation }: any) {
   const { appMode: activeTab, setAppMode: setActiveTab, isOnline, setIsOnline } = useMode();
+
+  const handleShare = async () => {
+    try {
+      await Share.share({
+        message: 'Check out DocMate! It’s the easiest way to get university documents processed in Nepal. Download it now!',
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -94,51 +106,55 @@ export default function ProfileScreen() {
 
         {/* ─── Grid Menu (Order History / Settings) ──────────────────── */}
         <Row gap={SPACING.md}>
-          <Card variant="flat" padding={SPACING.lg} style={styles.gridCard}>
-            <Ionicons name="receipt-outline" size={24} color="#5C6BC0" style={styles.gridIcon} />
-            <Spacer size="md" />
-            <AppText variant="caption" weight="bold" color="#000000">
-              {activeTab === "DartaSathi" ? "Order History" : "Request History"}
-            </AppText>
-            <Spacer size="xxs" />
-            <AppText variant="micro" color={COLORS.textMuted} style={styles.gridDesc}>
-              View previous registrations
-            </AppText>
-          </Card>
+          <TouchableOpacity style={{ flex: 1 }} activeOpacity={0.8} onPress={() => navigation.navigate(ROUTES.REQUEST_HISTORY as any)}>
+            <Card variant="flat" padding={SPACING.lg} style={[styles.gridCard, { flex: 0 }]}>
+              <Ionicons name="receipt-outline" size={24} color="#5C6BC0" style={styles.gridIcon} />
+              <Spacer size="md" />
+              <AppText variant="caption" weight="bold" color="#000000">
+                {activeTab === "DartaSathi" ? "Order History" : "Request History"}
+              </AppText>
+              <Spacer size="xxs" />
+              <AppText variant="micro" color={COLORS.textMuted} style={styles.gridDesc}>
+                View previous registrations
+              </AppText>
+            </Card>
+          </TouchableOpacity>
 
-          <Card variant="flat" padding={SPACING.lg} style={styles.gridCard}>
-            <Ionicons name="settings-outline" size={24} color="#8D6E63" style={styles.gridIcon} />
-            <Spacer size="md" />
-            <AppText variant="caption" weight="bold" color="#000000">
-              Settings
-            </AppText>
-            <Spacer size="xxs" />
-            <AppText variant="micro" color={COLORS.textMuted} style={styles.gridDesc}>
-              Security &{"\n"}Preferences
-            </AppText>
-          </Card>
+          <TouchableOpacity style={{ flex: 1 }} activeOpacity={0.8} onPress={() => navigation.navigate(ROUTES.SETTINGS as any)}>
+            <Card variant="flat" padding={SPACING.lg} style={[styles.gridCard, { flex: 0 }]}>
+              <Ionicons name="settings-outline" size={24} color="#8D6E63" style={styles.gridIcon} />
+              <Spacer size="md" />
+              <AppText variant="caption" weight="bold" color="#000000">
+                Settings
+              </AppText>
+              <Spacer size="xxs" />
+              <AppText variant="micro" color={COLORS.textMuted} style={styles.gridDesc}>
+                Security &{"\n"}Preferences
+              </AppText>
+            </Card>
+          </TouchableOpacity>
         </Row>
 
         <Spacer size="md" />
 
-        {/* ─── Referral Code ─────────────────────────────────────────── */}
+        {/* ─── Share App ─────────────────────────────────────────── */}
         <View style={styles.referralCard}>
-          <Row justify="space-between" align="flex-start">
+          <Row justify="space-between" align="center">
             <Column gap={2}>
               <AppText variant="micro" weight="bold" color="#FFE0B2" style={{ letterSpacing: 0.5 }}>
-                REFERRAL CODE
+                SPREAD THE WORD
               </AppText>
-              <AppText variant="h2" weight="bold" color={COLORS.white}>
-                DD-NEP100
+              <AppText variant="body" weight="bold" color={COLORS.white}>
+                Share DocMate App
               </AppText>
             </Column>
-            <TouchableOpacity style={styles.copyButton}>
-              <Ionicons name="copy-outline" size={18} color={COLORS.white} />
+            <TouchableOpacity style={styles.copyButton} onPress={handleShare}>
+              <Ionicons name="share-social" size={20} color={COLORS.white} />
             </TouchableOpacity>
           </Row>
           <Spacer size="sm" />
           <AppText variant="micro" color="#FFE0B2">
-            Share with friends to get NPR 100 credit.
+            Help your friends with their university documents easily.
           </AppText>
         </View>
 
@@ -149,7 +165,7 @@ export default function ProfileScreen() {
         <Spacer size="xl" />
 
         {/* ─── Bottom Actions ────────────────────────────────────────── */}
-        <TouchableOpacity style={styles.actionRow} activeOpacity={0.7}>
+        <TouchableOpacity style={styles.actionRow} activeOpacity={0.7} onPress={() => navigation.navigate(ROUTES.HELP_SUPPORT as any)}>
           <Row gap={SPACING.md} align="center">
             <Box width={24} height={24} radius={6} bg="#FFE0B2" align="center" justify="center">
               <Ionicons name="help" size={14} color="#E65100" />
@@ -163,7 +179,21 @@ export default function ProfileScreen() {
 
         <View style={styles.actionDivider} />
 
-        <TouchableOpacity style={styles.actionRow} activeOpacity={0.7}>
+        <TouchableOpacity style={styles.actionRow} activeOpacity={0.7} onPress={() => navigation.navigate(ROUTES.TERMS_CONDITIONS as any)}>
+          <Row gap={SPACING.md} align="center">
+            <Box width={24} height={24} radius={6} bg="#E1F5FE" align="center" justify="center">
+              <Ionicons name="document-text" size={12} color="#0288D1" />
+            </Box>
+            <AppText variant="caption" weight="bold" color="#000000" style={{ flex: 1 }}>
+              Terms of Service
+            </AppText>
+            <Ionicons name="chevron-forward" size={16} color={COLORS.textMuted} />
+          </Row>
+        </TouchableOpacity>
+
+        <View style={styles.actionDivider} />
+
+        <TouchableOpacity style={styles.actionRow} activeOpacity={0.7} onPress={() => navigation.navigate(ROUTES.PRIVACY_POLICY as any)}>
           <Row gap={SPACING.md} align="center">
             <Box width={24} height={24} radius={6} bg="#FFCCBC" align="center" justify="center">
               <Ionicons name="shield-checkmark" size={12} color="#D84315" />
