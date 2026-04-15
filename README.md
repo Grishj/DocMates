@@ -342,7 +342,5 @@ For issues, questions, or feature requests, please open an issue or contact the 
 
 ---
 
-**Last Updated**: April 2026 | **Version**: 1.0.0
-**Here's a much better, engaging, and accurate `README.md` tailored for your DocMate app:**
 
----
+
